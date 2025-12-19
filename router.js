@@ -52,8 +52,7 @@ function RenderContactPage() {
 	</form>`;
 
 
-	// --- Validation + reCAPTCHA setup ---
-	const RECAPTCHA_SITE_KEY = ''; // <-- Wstaw swój site key tutaj, np. '6Lc...'
+	const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
 	const errorsEl = document.getElementById('contact-errors');
 	const form = document.getElementById('contact-form');
 	const submitBtn = document.getElementById('contact-submit');
@@ -76,7 +75,7 @@ function RenderContactPage() {
 	}
 
 	function loadRecaptcha(siteKey) {
-		if (!siteKey) return; // brak klucza — pomijamy ładowanie
+		if (!siteKey) return;
 		if (window.grecaptcha && window.grecaptcha.render) {
 			recaptchaWidgetId = grecaptcha.render('g-recaptcha', { sitekey: siteKey });
 			return;
@@ -101,10 +100,8 @@ function RenderContactPage() {
 		if (RECAPTCHA_SITE_KEY) {
 			const token = grecaptcha.getResponse(recaptchaWidgetId);
 			if (!token) { showErrors('Potwierdź, że nie jesteś robotem.'); return; }
-			// TODO: wyślij token na serwer do weryfikacji z secret key
 			console.log('reCAPTCHA token:', token);
 		}
-		// Mock submit — tutaj możesz wysłać dane do serwera (fetch POST)
 		submitBtn.disabled = true;
 		try {
 			const payload = {
@@ -174,7 +171,6 @@ function RenderGalleryPage() {
 					el.appendChild(img);
 					el.dataset.loaded = '1';
 					img.addEventListener('click', () => openModal(url));
-					// also open on Enter key for accessibility
 					el.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') openModal(url); });
 				}).catch(() => {
 					el.innerHTML = '<div class="thumb-error">Błąd</div>';
