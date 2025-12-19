@@ -39,19 +39,86 @@ function RenderAboutPage() {
 function RenderContactPage() {
 	document.querySelector('main').innerHTML = `
 	<h1 class="title">Contact with me</h1>
-	<form id="contact-form">
-	<label for="name">Name:</label>
+	<form id="contact-form" novalidate>
+	<div id="contact-errors" style="color:#900;margin-bottom:0.6rem"></div>
+	<label for="name">Imię:</label>
 	<input type="text" id="name" name="name" required>
-	<label for="email">Email:</label>
+	<label for="email">E-mail:</label>
 	<input type="email" id="email" name="email" required>
-	<label for="message">Message:</label>
+	<label for="message">Wiadomość:</label>
 	<textarea id="message" name="message" required></textarea>
-	<button type="submit">Send</button>
+	<div id="g-recaptcha" style="margin:0.6rem 0"></div>
+	<button type="submit" id="contact-submit">Wyślij</button>
 	</form>`;
 
-	document.getElementById('contact-form').addEventListener('submit', (event) => {
+
+	// --- Validation + reCAPTCHA setup ---
+	const RECAPTCHA_SITE_KEY = ''; // <-- Wstaw swój site key tutaj, np. '6Lc...'
+	const errorsEl = document.getElementById('contact-errors');
+	const form = document.getElementById('contact-form');
+	const submitBtn = document.getElementById('contact-submit');
+	let recaptchaWidgetId = null;
+
+	function showErrors(msg) {
+		errorsEl.textContent = msg || '';
+	}
+
+	function validate() {
+		const name = document.getElementById('name').value.trim();
+		const email = document.getElementById('email').value.trim();
+		const message = document.getElementById('message').value.trim();
+		if (!name) return 'Podaj imię.';
+		if (!email) return 'Podaj e-mail.';
+		const emailRe = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+		if (!emailRe.test(email)) return 'Podaj poprawny e-mail.';
+		if (!message || message.length < 5) return 'Wiadomość powinna mieć co najmniej 5 znaków.';
+		return null;
+	}
+
+	function loadRecaptcha(siteKey) {
+		if (!siteKey) return; // brak klucza — pomijamy ładowanie
+		if (window.grecaptcha && window.grecaptcha.render) {
+			recaptchaWidgetId = grecaptcha.render('g-recaptcha', { sitekey: siteKey });
+			return;
+		}
+		const s = document.createElement('script');
+		s.src = 'https://www.google.com/recaptcha/api.js?onload=__onRecaptchaLoaded&render=explicit';
+		s.async = true; s.defer = true;
+		document.head.appendChild(s);
+		window.__onRecaptchaLoaded = function() {
+			recaptchaWidgetId = grecaptcha.render('g-recaptcha', { sitekey: siteKey });
+		};
+	}
+
+	loadRecaptcha(RECAPTCHA_SITE_KEY);
+
+	form.addEventListener('submit', async (event) => {
 		event.preventDefault();
-		alert('Form submitted!');
+		showErrors('');
+		const v = validate();
+		if (v) { showErrors(v); return; }
+		// reCAPTCHA check (if key provided)
+		if (RECAPTCHA_SITE_KEY) {
+			const token = grecaptcha.getResponse(recaptchaWidgetId);
+			if (!token) { showErrors('Potwierdź, że nie jesteś robotem.'); return; }
+			// TODO: wyślij token na serwer do weryfikacji z secret key
+			console.log('reCAPTCHA token:', token);
+		}
+		// Mock submit — tutaj możesz wysłać dane do serwera (fetch POST)
+		submitBtn.disabled = true;
+		try {
+			const payload = {
+				name: document.getElementById('name').value.trim(),
+				email: document.getElementById('email').value.trim(),
+				message: document.getElementById('message').value.trim()
+			};
+			console.log('Sending contact payload', payload);
+			alert('Wysłano formularz (mock).');
+			form.reset();
+			if (RECAPTCHA_SITE_KEY && window.grecaptcha && recaptchaWidgetId !== null) grecaptcha.reset(recaptchaWidgetId);
+		} catch (e) {
+			showErrors('Błąd wysyłki.');
+		} finally { submitBtn.disabled = false; }
 	});
 }
 
