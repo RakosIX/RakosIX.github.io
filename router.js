@@ -128,6 +128,16 @@ function popStateHandler() {
 }
 
 window.onpopstate = popStateHandler;
-document.getElementById('theme-toggle').addEventListener('click', () => {
-	document.body.classList.toggle('dark-mode');
-});
+
+function setupThemeToggle() {
+	const btn = document.getElementById('theme-toggle');
+	if (!btn) return;
+	const stored = localStorage.getItem('theme');
+	if (stored === 'dark') document.body.classList.add('dark-mode');
+	else document.body.classList.remove('dark-mode');
+	btn.addEventListener('click', () => {
+		const isDark = document.body.classList.toggle('dark-mode');
+		try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch (e) {}
+	});
+}
+setupThemeToggle();
