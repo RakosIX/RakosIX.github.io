@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1668" height="2224" viewBox="0 0 1668 2224">
+  <rect width="100%" height="100%" fill="#db4938"/>
+  <g transform="translate(380,460) scale(3.2)">
+    <path d="M160 170c-36-60-14-116 52-150 66-34 144-14 222 30 78 44 138 102 160 174 22 72 0 140-78 190-78 50-195 20-292-32-97-52-142-112-186-262z" fill="#fff"/>
+    <circle cx="520" cy="150" r="18" fill="#000"/>
+    <path d="M120 350c-26 56 20 116 82 142 62 26 146 10 232-36" stroke="#fff" stroke-width="24" fill="none" stroke-linecap="round"/>
+  </g>
+  <text x="50%" y="96%" font-size="38" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">splash-1668x2224 — dog</text>
+</svg>
